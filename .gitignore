@@ -1,0 +1,8 @@
+/target
+**/*.rs.bk
+/dist
+/worker
+bin/
+pkg/
+wasm-pack.log
+node_modules

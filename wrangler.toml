@@ -1,0 +1,11 @@
+name = "push-page-diff"
+type = "webpack"
+account_id = "7718b66fac7dfe0e5badaa986de51a5d"
+workers_dev = true
+route = "push"
+webpack_config = "webpack.config.js"
+# zone_id = ""
+
+[site]
+bucket = "./site"
+entry-point = "."
