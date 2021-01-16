@@ -1,3 +1,4 @@
+use wasm_bindgen::JsCast;
 use cfg_if::cfg_if;
 
 cfg_if! {
@@ -14,4 +15,11 @@ cfg_if! {
         #[inline]
         pub fn set_panic_hook() {}
     }
+}
+
+// Using window doesn't work because not in the Cloudflare worker context
+pub fn worker_global_scope() -> Option<web_sys::ServiceWorkerGlobalScope> {
+    js_sys::global()
+        .dyn_into::<web_sys::ServiceWorkerGlobalScope>()
+        .ok()
 }

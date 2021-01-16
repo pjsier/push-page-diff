@@ -43,21 +43,27 @@ function requestNotification(diff) {
         })
       })
     )
-    .then((subscription) =>
-      fetch("./register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          subscription,
-          diff,
-        }),
-      })
-    )
+    .then((subscription) => {
+      const {
+        endpoint,
+        keys: { auth, p256dh },
+      } = JSON.parse(JSON.stringify(subscription))
+      // console.log(subscription)
+      console.log({ endpoint, auth, p256dh, diff })
+      // fetch("./register", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify({ endpoint, auth, p256dh, diff }),
+      // })
+    })
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   // window.alert("testing")
   console.log("testing")
+  document.getElementById("testing").addEventListener("click", () => {
+    requestNotification("https://example.com")
+  })
 })
