@@ -6,6 +6,12 @@ route = "push"
 webpack_config = "webpack.config.js"
 # zone_id = ""
 
+# TODO: for polling
+# https://developers.cloudflare.com/workers/cli-wrangler/configuration#triggers
+# Set up scheduled event listener https://developers.cloudflare.com/workers/runtime-apis/scheduled-event
+# [triggers]
+# crons = [""]
+
 [site]
 bucket = "./site"
 entry-point = "."

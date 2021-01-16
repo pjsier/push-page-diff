@@ -12,9 +12,10 @@ default = ["console_error_panic_hook"]
 
 [dependencies]
 cfg-if = "0.1.2"
-wasm-bindgen = "=0.2.67"
-wasm-bindgen-futures = "=0.4.17"
-js-sys = "=0.3.44"
+wasm-bindgen = "0.2.69"
+wasm-bindgen-futures = "0.4.19"
+js-sys = "0.3.46"
+scraper = "0.12"
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
@@ -26,6 +27,17 @@ console_error_panic_hook = { version = "0.1.1", optional = true }
 # compared to the default allocator's ~10K. It is slower than the default
 # allocator, however.
 wee_alloc = { version = "0.4.2", optional = true }
+
+[dependencies.web-sys]
+version = "0.3.4"
+features = [
+  'Headers',
+  'Request',
+  'RequestInit',
+  'Response',
+  'Window',
+  'ServiceWorkerGlobalScope',
+]
 
 [dev-dependencies]
 wasm-bindgen-test = "0.2"

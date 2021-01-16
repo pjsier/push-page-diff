@@ -1,14 +1,37 @@
 import { getAssetFromKV } from "@cloudflare/kv-asset-handler"
 
-// Sites code pulled from
-// https://github.com/cloudflare/worker-sites-template
-
 const DEBUG = false
+
+class AttributeRewriter {
+  constructor(attributeName) {
+    this.attributeName = attributeName
+  }
+
+  element(element) {
+    const attribute = element.getAttribute(this.attributeName)
+    if (attribute) {
+      element.setAttribute(
+        this.attributeName,
+        attribute.replace("{{VAPID_PUBLIC_KEY}}", process.env.VAPID_PUBLIC_KEY)
+      )
+    }
+  }
+}
+
+function rewriteEnvironmentVars(res) {
+  const rewriter = new HTMLRewriter().on(
+    "meta",
+    new AttributeRewriter("content")
+  )
+  return rewriter.transform(res)
+}
 
 async function handleEvent(event) {
   const url = new URL(event.request.url)
   // Handle push route with WASM
-  if (url.pathname.startsWith(`/push`)) {
+  if (url.pathname.match(/\/register\/?/)) {
+    return await handleRegisterRequest(event.request)
+  } else if (url.pathname.match(/\/push\/?/)) {
     return await handlePushRequest(event.request)
   }
   let options = {}
@@ -24,7 +47,7 @@ async function handleEvent(event) {
     const page = await getAssetFromKV(event, options)
 
     // allow headers to be altered
-    const response = new Response(page.body, page)
+    const response = rewriteEnvironmentVars(new Response(page.body, page))
 
     response.headers.set("X-XSS-Protection", "1; mode=block")
     response.headers.set("X-Content-Type-Options", "nosniff")
@@ -53,12 +76,25 @@ async function handleEvent(event) {
   }
 }
 
-// Modifications for webpack type based on
-// https://github.com/cloudflare/rustwasm-worker-template/pull/7
+async function handleRegisterRequest(request) {
+  try {
+    const { register_subscription } = wasm_bindgen
+    await wasm_bindgen(wasm)
+    return register_subscription(request)
+  } catch (e) {
+    return new Response(e.stack || err)
+  }
+}
+
 async function handlePushRequest(request) {
-  const { greet } = await import("./pkg")
-  const greeting = await greet()
-  return new Response(greeting, { status: 200 })
+  try {
+    const { load_html } = wasm_bindgen
+    await wasm_bindgen(wasm)
+    const htmlStr = await load_html("https://example.com/").catch(console.error)
+    return new Response(htmlStr, { status: 200 })
+  } catch (e) {
+    return new Response(e.stack)
+  }
 }
 
 addEventListener("fetch", (event) => {
