@@ -5,6 +5,9 @@ workers_dev = true
 route = "push"
 webpack_config = "webpack.config.js"
 # zone_id = ""
+kv_namespaces = [ 
+    { binding = "DIFF_KV", id = "ecdb66874bdd4b829dcafa56e67d43fc", preview_id = "2e703bb4411540d4a31793201788b09a" }
+]
 
 # TODO: for polling
 # https://developers.cloudflare.com/workers/cli-wrangler/configuration#triggers

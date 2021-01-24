@@ -50,20 +50,39 @@ function requestNotification(diff) {
       } = JSON.parse(JSON.stringify(subscription))
       // console.log(subscription)
       console.log({ endpoint, auth, p256dh, diff })
-      // fetch("./register", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({ endpoint, auth, p256dh, diff }),
-      // })
+      fetch("./register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ endpoint, auth, p256dh, diff }),
+      })
     })
 }
 
+function unsubscribeNotifications() {
+  navigator.serviceWorker.ready.then((reg) => {
+    reg.pushManager.getSubscription().then((subscription) => {
+      subscription
+        .unsubscribe()
+        .then((successful) => {
+          // You've successfully unsubscribed
+          console.log("unsubscribe")
+        })
+        .catch((e) => {
+          // Unsubscription failed
+          console.log("failed")
+        })
+    })
+  })
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  // window.alert("testing")
   console.log("testing")
   document.getElementById("testing").addEventListener("click", () => {
     requestNotification("https://example.com")
+  })
+  document.getElementById("unsubscribe").addEventListener("click", () => {
+    unsubscribeNotifications()
   })
 })

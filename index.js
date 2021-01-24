@@ -31,6 +31,8 @@ async function handleEvent(event) {
   // Handle push route with WASM
   if (url.pathname.match(/\/register\/?/)) {
     return await handleRegisterRequest(event.request)
+  } else if (url.pathname.match(/\/diff\/?/)) {
+    return await handleDiffRequest(event.request)
   } else if (url.pathname.match(/\/push\/?/)) {
     return await handlePushRequest(event.request)
   }
@@ -80,7 +82,19 @@ async function handleRegisterRequest(request) {
   try {
     const { register_subscription } = wasm_bindgen
     await wasm_bindgen(wasm)
-    return register_subscription(request)
+    await register_subscription(await request.json())
+    return new Response("registered", { status: 200 })
+  } catch (e) {
+    return new Response(e.stack || err)
+  }
+}
+
+async function handleDiffRequest(request) {
+  try {
+    const { check_diffs_and_push } = wasm_bindgen
+    await wasm_bindgen(wasm)
+    await check_diffs_and_push()
+    return new Response("", { status: 200 })
   } catch (e) {
     return new Response(e.stack || err)
   }
@@ -88,10 +102,10 @@ async function handleRegisterRequest(request) {
 
 async function handlePushRequest(request) {
   try {
-    const { load_html } = wasm_bindgen
+    const { send_push } = wasm_bindgen
     await wasm_bindgen(wasm)
-    const htmlStr = await load_html("https://example.com/").catch(console.error)
-    return new Response(htmlStr, { status: 200 })
+    await send_push().catch(console.error)
+    return new Response("Success", { status: 200 })
   } catch (e) {
     return new Response(e.stack)
   }
@@ -109,5 +123,15 @@ addEventListener("fetch", (event) => {
       )
     }
     event.respondWith(new Response("Internal Error", { status: 500 }))
+  }
+})
+
+addEventListener("scheduled", async (event) => {
+  try {
+    const { check_diffs_and_push } = wasm_bindgen
+    await wasm_bindgen(wasm)
+    event.waitUntil(check_diffs_and_push())
+  } catch (e) {
+    console.error(e)
   }
 })

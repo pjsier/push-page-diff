@@ -1,4 +1,5 @@
 use wasm_bindgen::JsCast;
+
 use cfg_if::cfg_if;
 
 cfg_if! {

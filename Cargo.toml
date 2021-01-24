@@ -15,10 +15,18 @@ cfg-if = "0.1.2"
 wasm-bindgen = { version = "0.2.69", features = ["serde-serialize"] }
 wasm-bindgen-futures = "0.4.19"
 js-sys = "0.3.46"
+futures = "0.3"
 scraper = "0.12"
 serde = "1"
 serde_derive = "1"
 serde_json = "1"
+jwt-simple = "0.2"
+base64 = "0.13"
+# Required to pin to resolve dependency loop in jwt-simple
+ed25519-compact = "=0.1.6"
+# Feature needed to fix compilation for wasm-unknown-unknown
+coarsetime = "=0.1.17"
+getrandom = {version = "0.1", features = ["wasm-bindgen"]}
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
@@ -40,10 +48,11 @@ features = [
   'Response',
   'Window',
   'ServiceWorkerGlobalScope',
+  'Url'
 ]
 
 [dev-dependencies]
-wasm-bindgen-test = "0.2"
+wasm-bindgen-test = "0.3"
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.

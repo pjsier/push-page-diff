@@ -14,3 +14,9 @@ Cloudflare worker for getting web push notifications when an HTML page's content
 ```
 wrangler preview --watch
 ```
+
+## Keys
+
+```
+npm run keys
+```
