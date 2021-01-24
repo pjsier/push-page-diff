@@ -1,22 +1,13 @@
 # Page Diff Push Notifications
 
-Cloudflare worker for getting web push notifications when an HTML page's content changes
-
-## TODO:
-
-- Implement page request
-- Correct server response for generating push notification
-- Cron trigger for KV polling
-- Check request on cron trigger, send notification and delete key if changed
+Cloudflare worker for subscribing to a browser push notification when an HTML page's content changes
 
 ## Setup
 
+Generate keys for VAPID authentication with `npm run keys`.
+
+Preview the worker locally with:
+
 ```
 wrangler preview --watch
-```
-
-## Keys
-
-```
-npm run keys
 ```
