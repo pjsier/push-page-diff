@@ -100,20 +100,12 @@ async function handleDiffRequest(request) {
   }
 }
 
-// Used for debugging
+// Used for debugging, manually trigger a run
 async function handlePushRequest(request) {
   try {
-    const { send_push } = wasm_bindgen
+    const { check_diffs_and_push } = wasm_bindgen
     await wasm_bindgen(wasm)
-    await send_push(
-      {
-        endpoint: "",
-        diff: "",
-        p256dh: "",
-        auth: "",
-      },
-      "Debug"
-    ).catch(console.error)
+    await check_diffs_and_push()
     return new Response("Success", { status: 200 })
   } catch (e) {
     return new Response(e.stack)

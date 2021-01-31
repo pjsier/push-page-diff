@@ -62,7 +62,11 @@ module.exports = {
       // no-modules needed based off of wrangler default args
       extraArgs: "--target no-modules --no-typescript",
     }),
-    new EnvironmentPlugin(["VAPID_PUBLIC_KEY"]),
+    new EnvironmentPlugin([
+      "VAPID_PUBLIC_KEY",
+      "VAPID_PRIVATE_KEY",
+      "VAPID_SUBJECT",
+    ]),
     new ConcatPlugin(),
     new CopyPlugin([{ from: "pkg/*.wasm", flatten: true }]),
   ],
