@@ -33,7 +33,7 @@ async function handleEvent(event) {
     return await handleRegisterRequest(event.request)
   } else if (url.pathname.match(/\/diff\/?/)) {
     return await handleDiffRequest(event.request)
-  } else if (url.pathname.match(/\/push\/?/)) {
+  } else if (url.pathname.match(/\/push\/?/) && DEBUG) {
     return await handlePushRequest(event.request)
   }
   let options = {}
