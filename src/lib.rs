@@ -5,6 +5,7 @@ use wasm_bindgen::prelude::*;
 use cfg_if::cfg_if;
 use serde_derive::{Deserialize, Serialize};
 
+mod crypto;
 mod html;
 mod kv;
 pub mod push;
