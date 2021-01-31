@@ -11,3 +11,8 @@ Preview the worker locally with:
 ```
 wrangler preview --watch
 ```
+
+## TODO:
+
+- Basic UI
+- Eventually IndexedDB for showing existing subscriptions? Allow for deleting?
