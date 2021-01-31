@@ -8,11 +8,15 @@ function urlBase64ToUint8Array(base64String) {
 function requestNotification(diff) {
   // Should only call on user action
   window.Notification.requestPermission((status) =>
-    console.log("Notification Permissiong status:", status)
+    console.log("Notification permission status:", status)
   )
 
   if (window.Notification.permission === "denied") {
     console.error("Not permitted")
+    showResultMessage(
+      `Your browser isn't currently allowing notifications from this page`,
+      true
+    )
     return
   }
   if (!navigator.serviceWorker) {
@@ -53,34 +57,62 @@ function requestNotification(diff) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ endpoint, auth, p256dh, diff }),
-      }).then((res) => {
-        // TODO: Save to IndexedDB for display?
       })
+        .then((res) => {
+          showResultMessage(`You've subscribed to notifications for ${diff}`)
+          // Display unsubscribe button
+          setupUnsubscribeButton(subscription)
+          // TODO: Save to IndexedDB for display?
+        })
+        .catch()
     })
 }
 
-function unsubscribeNotifications() {
-  navigator.serviceWorker.ready.then((reg) => {
-    reg.pushManager.getSubscription().then((subscription) => {
-      subscription
-        .unsubscribe()
-        .then((successful) => {
-          console.log("unsubscribed")
-        })
-        .catch((e) => {
-          console.log("unsubscribe failed")
-        })
+function showResultMessage(message, error) {
+  const result = document.getElementById("result")
+  result.classList.toggle("hidden", false)
+  result.classList.toggle("error", !!error)
+  result.querySelector("p").innerText = message
+}
+
+function unsubscribeNotifications(subscription) {
+  subscription
+    .unsubscribe()
+    .then((successful) => {
+      console.log("unsubscribed")
+      showResultMessage(`You've unsubscribed from notifications`)
+      document.getElementById("unsubscribe").classList.toggle("hidden", true)
     })
-  })
+    .catch((e) => {
+      console.error("unsubscribe failed")
+      showResultMessage(
+        `There was an error unsubscribing you from notifications`,
+        true
+      )
+    })
+}
+
+function setupUnsubscribeButton(subscription) {
+  // If a subscription exists, enable the unsubscribe button
+  if (subscription) {
+    const unsubscribeBtn = document.getElementById("unsubscribe")
+    unsubscribeBtn.classList.toggle("hidden", false)
+    // Only calling once doesn't handle errors, but ignoring for now
+    unsubscribeBtn.addEventListener(
+      "click",
+      () => unsubscribeNotifications(subscription),
+      { once: true }
+    )
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("testing")
   document.getElementById("diff-form").addEventListener("submit", (e) => {
     e.preventDefault()
     requestNotification(document.getElementById("diff-input").value)
   })
-  document.getElementById("unsubscribe").addEventListener("click", () => {
-    unsubscribeNotifications()
+
+  navigator.serviceWorker.ready.then((reg) => {
+    reg.pushManager.getSubscription().then(setupUnsubscribeButton)
   })
 })

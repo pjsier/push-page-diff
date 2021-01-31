@@ -1,24 +1,34 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Page Diff Notifications</title>
+    <meta
+      name="description"
+      content="Get web push notifications when an HTML page's content changes "
+    />
     <meta name="vapid-public-key" content="{{VAPID_PUBLIC_KEY}}" />
-    <style>
-      h1 {
-        font-size: 4em;
-        margin: 0;
-      }
-    </style>
+    <link type="text/css" href="style.css" rel="stylesheet" />
   </head>
   <body>
-    <div class="centered">
+    <main>
       <h1>URL Diff</h1>
+      <p>
+        Enter a URL to receive a web push notification the first time its HTML
+        content changes
+      </p>
       <form action="" method="GET" id="diff-form">
-        <label for="diff-input">URL to check</label>
-        <input type="text" id="diff-input" name="diff" />
-        <button type="submit">Subscribe</button>
+        <label for="diff-input">URL to watch</label>
+        <div class="input-block">
+          <input type="text" id="diff-input" name="diff" />
+          <button type="submit">Subscribe</button>
+        </div>
       </form>
-      <button id="unsubscribe">Unsubscribe</button>
-    </div>
+      <div id="result" class="hidden"><p></p></div>
+      <button class="hidden" id="unsubscribe">Unsubscribe</button>
+    </main>
     <script src="script.js"></script>
   </body>
 </html>
