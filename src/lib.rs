@@ -7,7 +7,7 @@ use serde_derive::{Deserialize, Serialize};
 
 mod html;
 mod kv;
-mod push;
+pub mod push;
 mod utils;
 
 use html::load_html_text;
@@ -24,30 +24,29 @@ cfg_if! {
     }
 }
 
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
-}
+// #[wasm_bindgen]
+// extern "C" {
+//     #[wasm_bindgen(js_namespace = console)]
+//     fn log(s: &str);
+// }
 
-#[macro_use]
-macro_rules! console_log {
-    // Note that this is using the `log` function imported above during
-    // `bare_bones`
-    ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
-}
+// #[macro_use]
+// macro_rules! console_log {
+//     // Note that this is using the `log` function imported above during
+//     // `bare_bones`
+//     ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
+// }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Subscription {
-    diff: String,
-    endpoint: String,
-    auth: String,
-    p256dh: String,
+    pub diff: String,
+    pub endpoint: String,
+    pub auth: String,
+    pub p256dh: String,
 }
 
 async fn create_site_if_not_exists(sub: Subscription) -> Result<(), JsValue> {
     let key = format!("site:{}", sub.diff);
-    console_log!("{}", key);
     let res = DIFF_KV::get(key.clone(), None).await;
     if res.is_null() {
         let html_str = load_html_text(sub.diff).await?;
@@ -79,8 +78,8 @@ pub async fn register_subscription(payload: JsValue) -> Result<(), JsValue> {
 async fn handle_sub_change(key: String) -> Result<(), JsValue> {
     let sub_val = DIFF_KV::get(key, Some("json".to_string())).await;
     let sub: Subscription = sub_val.into_serde().map_err(|e| e.to_string())?;
-    push_notification(sub.endpoint.clone()).await?;
-    DIFF_KV::delete(format!("sub:{}:{}", sub.endpoint, sub.p256dh)).await;
+    push_notification(sub.clone()).await?;
+    DIFF_KV::delete(format!("sub:{}:{}", sub.diff, sub.p256dh)).await;
     Ok(())
 }
 
@@ -94,12 +93,12 @@ async fn has_url_changed(url: String, content: String) -> bool {
 
 // TODO: Operate with concurrency, max simultaneous
 async fn handle_site_change(url: String) -> Result<(), JsValue> {
-    let prefix = format!("site:{}:", url);
+    let prefix = format!("sub:{}:", url);
     let all_keys = keys_for_prefix(prefix.clone()).await?;
 
     try_join_all(all_keys.into_iter().map(handle_sub_change)).await?;
 
-    DIFF_KV::delete(prefix).await;
+    DIFF_KV::delete(format!("site:{}", url)).await;
     Ok(())
 }
 
@@ -123,12 +122,12 @@ async fn check_update_site(key: String) -> Result<(), JsValue> {
 #[wasm_bindgen]
 pub async fn check_diffs_and_push() -> Result<(), JsValue> {
     let all_keys = keys_for_prefix("site:".to_string()).await?;
-    console_log!("{:?}", all_keys);
-    // try_join_all(all_keys.into_iter().map(check_update_site)).await?;
+    try_join_all(all_keys.into_iter().map(check_update_site)).await?;
     Ok(())
 }
 
 #[wasm_bindgen]
-pub async fn send_push(endpoint: String) -> Result<(), JsValue> {
-    push_notification(endpoint).await
+pub async fn send_push(sub_val: JsValue) -> Result<(), JsValue> {
+    let subscription = sub_val.into_serde().map_err(|e| e.to_string())?;
+    push_notification(subscription).await
 }

@@ -5,8 +5,6 @@ function urlBase64ToUint8Array(base64String) {
   return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)))
 }
 
-// TODO: Prevent default
-
 function requestNotification(diff) {
   // Should only call on user action
   window.Notification.requestPermission((status) =>
@@ -24,7 +22,7 @@ function requestNotification(diff) {
 
   // Register and get the notification details and send them to our back end server.
   navigator.serviceWorker
-    .register(`sw.js?=diff=${window.encodeURIComponent(diff)}`)
+    .register(`sw.js`)
     .then((registration) =>
       // Use the PushManager to get the user's subscription to the push service.
       registration.pushManager.getSubscription().then(async (subscription) => {
@@ -48,7 +46,6 @@ function requestNotification(diff) {
         endpoint,
         keys: { auth, p256dh },
       } = JSON.parse(JSON.stringify(subscription))
-      // console.log(subscription)
       console.log({ endpoint, auth, p256dh, diff })
       fetch("./register", {
         method: "POST",
@@ -56,6 +53,8 @@ function requestNotification(diff) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ endpoint, auth, p256dh, diff }),
+      }).then((res) => {
+        // TODO: Save to IndexedDB for display?
       })
     })
 }
@@ -66,12 +65,10 @@ function unsubscribeNotifications() {
       subscription
         .unsubscribe()
         .then((successful) => {
-          // You've successfully unsubscribed
-          console.log("unsubscribe")
+          console.log("unsubscribed")
         })
         .catch((e) => {
-          // Unsubscription failed
-          console.log("failed")
+          console.log("unsubscribe failed")
         })
     })
   })
@@ -79,8 +76,9 @@ function unsubscribeNotifications() {
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("testing")
-  document.getElementById("testing").addEventListener("click", () => {
-    requestNotification("https://example.com")
+  document.getElementById("diff-form").addEventListener("submit", (e) => {
+    e.preventDefault()
+    requestNotification(document.getElementById("diff-input").value)
   })
   document.getElementById("unsubscribe").addEventListener("click", () => {
     unsubscribeNotifications()
