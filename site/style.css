@@ -4,6 +4,7 @@ body {
   font-family: "BlinkMacSystemFont", "-apple-system", "Segoe UI", "Roboto",
     "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     "Helvetica", "Arial", "sans-serif";
+  font-weight: 300;
 }
 
 body {
@@ -27,6 +28,7 @@ main {
 
 h1 {
   font-size: 2em;
+  font-weight: 500;
 }
 
 form {
@@ -35,8 +37,13 @@ form {
 
 label {
   display: block;
-  font-weight: bold;
+  font-weight: 500;
   margin-bottom: 0.5em;
+}
+
+input,
+button {
+  font-weight: 300;
 }
 
 .input-block {
