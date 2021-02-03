@@ -19,6 +19,12 @@
         Enter a URL to receive a web push notification the first time its HTML
         content changes
       </p>
+      <div id="unsupported-browser" class="hidden result error">
+        <p>
+          Web push notifications aren't supported in this browser. See
+          <a href="https://caniuse.com/notifications">supported browsers</a>.
+        </p>
+      </div>
       <form action="" method="GET" id="diff-form">
         <label for="diff-input">URL to watch</label>
         <div class="input-block">
@@ -26,7 +32,7 @@
           <button type="submit">Subscribe</button>
         </div>
       </form>
-      <div id="result" class="hidden"><p></p></div>
+      <div id="result" class="result hidden"><p></p></div>
       <button class="hidden" id="unsubscribe">Unsubscribe</button>
     </main>
     <script src="script.js"></script>

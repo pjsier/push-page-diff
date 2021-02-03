@@ -106,7 +106,19 @@ function setupUnsubscribeButton(subscription) {
   }
 }
 
+function unsupportedBrowser() {
+  document.getElementById("unsupported-browser").classList.remove("hidden")
+  document.querySelectorAll("input, button").forEach((el) => {
+    el.setAttribute("disabled", "")
+  })
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  if (!("PushManager" in window)) {
+    unsupportedBrowser()
+    return
+  }
+
   document.getElementById("diff-form").addEventListener("submit", (e) => {
     e.preventDefault()
     requestNotification(document.getElementById("diff-input").value)
