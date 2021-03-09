@@ -28,6 +28,6 @@ jobs:
 
       - run: npm install
 
-      - run: npm i @cloudflare/wrangler -g
+      - run: npm i @cloudflare/wrangler@1.13.0 -g
 
       - run: wrangler publish

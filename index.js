@@ -84,6 +84,7 @@ async function handleRegisterRequest(request) {
     await wasm_bindgen(wasm)
     await register_subscription(await request.json())
     return new Response("registered", { status: 200 })
+    // TODO: Not throwing error on request issue
   } catch (e) {
     return new Response(e.stack || err)
   }
